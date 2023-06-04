@@ -2,7 +2,7 @@ package br.com.estoque.DAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -39,27 +39,58 @@ public class FornecedoresDAO {
 		
 	}
 	
-	public Fornecedores buscaPorCodigo (Fornecedores f) throws SQLException{
+	public ArrayList<Fornecedores> listar() throws SQLException{
 		StringBuilder sql = new StringBuilder();
 		sql.append("Select codigo, descricao ");
 		sql.append("from fornecedores ");
-		sql.append("where codigo = ? ");
+		sql.append("order by descricao asc ");
 		
 		Connection conexao = ConexaoFactory.conectar();
 		
 		PreparedStatement comando = conexao.prepareStatement(sql.toString());
 		
-		comando.setLong(1,f.getCodigo());
+		ResultSet resultado = comando.executeQuery();
+		
+		ArrayList<Fornecedores>lista= new ArrayList<Fornecedores>();
+		
+		while(resultado.next()) {
+
+			Fornecedores f = new Fornecedores();
+			f.setCodigo(resultado.getLong("codigo"));
+			f.setDescricao(resultado.getString("descricao"));
+			
+			lista.add(f);
+		}
+		return lista;
+	}
+	
+	public ArrayList<Fornecedores>buscaPorDescricao (Fornecedores f) throws SQLException{
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select codigo, descricao ");
+		sql.append("select fornecedores ");
+		sql.append("where descricao like ? ");
+		sql.append("order by descricao asc ");
+		
+        Connection conexao = ConexaoFactory.conectar();
+		
+		PreparedStatement comando = conexao.prepareStatement(sql.toString());
+		
+		comando.setString(1, "%" + f.getDescricao() + "%");
 		
 		ResultSet resultado = comando.executeQuery();
-		Fornecedores retorno = null;
 		
-		if(resultado.next()) {
-			retorno = new Fornecedores();
-			retorno.setCodigo(resultado.getLong("codigo"));
-			retorno.setDescricao(resultado.getString("descricao"));
+		ArrayList<Fornecedores>lista= new ArrayList<Fornecedores>();
+		
+		while(resultado.next()) {
+
+			Fornecedores item = new Fornecedores();
+			f.setCodigo(resultado.getLong("codigo"));
+			f.setDescricao(resultado.getString("descricao"));
+			
+			lista.add(f);
 		}
-		return retorno;
+		return lista;
 	}
 	
 	public void editar (Fornecedores f) throws SQLException{
@@ -77,7 +108,23 @@ public class FornecedoresDAO {
 		comando.executeUpdate();
 	}
 	
+	/*Fornecedores f1 = new Fornecedores();
+	 * f1.setDescricao("Alt");
+	 * FornecedoresDAO fdao = new FornecedoresDAO();
+	 * try{
+	 *     ArrayList<Fornecedores>lista = fdao.buscarPorDescricao(f1);
+	 *     
+	 *     for(Fornecedores f : lista){
+	 *         System.out.println("Resultado: " + f);
+	 *     }
+	 * }
+	 * catch (SQLException e) {
+	 *     System.out.println("Erro ao buscar os dados");
+	 *     e.printStackTrace();
+	 * }
+	 */
 
+	
 	
 	public static void main(String [] args) {
 		
@@ -134,23 +181,37 @@ public class FornecedoresDAO {
 	    //}
 		
 		//TESTE BUSCA POR CODIGO
+		//FornecedoresDAO fdao= new FornecedoresDAO();
+				
+		//try {
+
+			//ArrayList<Fornecedores>lista = fdao.listar();
+			//for(Fornecedores f : lista) {
+				//System.out.println("Resultado + " + f);
+			//}
+			//}
+		//catch (SQLException e){
+				//System.out.println("Erro ao buscar os dados!!!");
+				//e.printStackTrace();
+		
+		
+		//TESTAR BUSCAR FORNCEDORES POR CODIGO--------------------------------
 		Fornecedores f1 = new Fornecedores();
-		f1.setCodigo(1L);
-				
-		Fornecedores f2 = new Fornecedores();
-		f2.setCodigo(5L);
-				
-		FornecedoresDAO fdao= new FornecedoresDAO();
-				
+		f1.setDescricao("src");
+		FornecedoresDAO fdao = new FornecedoresDAO();
+		
 		try {
-			    Fornecedores f3 = fdao.buscaPorCodigo(f1);
-			    Fornecedores f4 = fdao.buscaPorCodigo(f2);
-			    System.out.println("Resultado 1:  " +f3);
-			    System.out.println("Resultado 2:  " +f4);
+			ArrayList<Fornecedores>lista = fdao.listar();
+			
+			for(Fornecedores f : lista) {
+				System.out.println("Resultado + " + f);
 			}
-		catch (SQLException e){
-				System.out.println("Erro ao buscar os dados!!!");
-				e.printStackTrace();
+		}catch (SQLException e){
+			System.out.println("Erro ao buscar os dados!!!");
+			e.printStackTrace();
+		
+		
 		}	
 	}
 }
+
