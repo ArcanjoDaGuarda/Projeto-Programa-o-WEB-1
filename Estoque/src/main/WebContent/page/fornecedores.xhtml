@@ -14,24 +14,61 @@ template="/templates/modelo.xhtml"
 </ui:define>
 
 <ui:define name="conteudo">
-<p:dataTable emptyMessage="Nenhum registro encontrado"
+
+<h:form id="frmfornecedores">
+
+<p:dataTable id="tbfornecedores" emptyMessage="Nenhum registro encontrado"
 value="#(MBFornecedores.itens)"
 var ="item"
 
 paginator="true"
 rows="8"
-
 >
-    <p:column heaterText="Código">
-        <h:outputText value = "#<item.codigo)" />
+
+<f:facet name="header">Lista de Fornecedores</f:facet>
+
+    <p:column heaterText="Código" sortBy = "#(item.codigo)" filterBy="#(item.codigo)">
+        <h:outputText value = "#(item.codigo)" />
     </p:column>
     
-    <p:column heaterText="Descrição">
-        <h:outputText value = "#<item.descricao)" />
+    <p:column heaterText="Descrição" sortBy = "#(item.descricao)" filterBy="#(item.descricao)">
+        <h:outputText value = "#(item.descricao)" />
     </p:column>
+    
+<f:facet name="footer"> <p:commandButton value="Novo" actionListener="#{MBFornecedores.PrepararNovo}"
+  oncomplete="PF('dlgforNovo').show();" update=":frmfornovo:pnfornovo" /> </f:facet>
+    
 </p:dataTable>
 
+</h:form>
 
+<p:dialog widgetVar="dlgForNovo" closeable="false" draggable="false" resizable="false"
+header = "Cadastrar fornecedor"
+modal="true"
+appendTo="@(body)"
+ >
+<h:form id="frmfornovo">
+     <h:panelGrid columns="2">
+         <p:outputLabel value="Descrição: " />
+         <p:inputText size="30" maxlength="50" value="#{MBFornecedores.fornecedores.descricao}" />
+     </h:panelGrid>
+     
+     <h:panelGrid columns="2">
+         <p:outputLabel value="Gravar " actionListener="#{MBFornecedores.novo}" oncomplete="PF('dlgforNovo').hide();"
+          update=":frmfornecedores:tbfornecedores" :msgGlobal />
+         <p:outputLabel value="Cancelar" onclick="PF('dlgforNovo').hide();" />
+     </h:panelGrid>
+</h:form>
+</p:dialog>
+
+
+1<h:form>
+
+<p:dialog>
+   <p:commandButton value="Novo" onclick="PF('dlgforNovo').show();" />
+</p:dialog>
+
+</h:form>
 </ui:define>
 
 </ui:composition>

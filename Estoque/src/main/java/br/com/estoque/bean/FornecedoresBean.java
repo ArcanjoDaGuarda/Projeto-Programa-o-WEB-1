@@ -7,9 +7,20 @@ import javax.faces.*;
 import javax.faces.model.ListDataModel;
 
 import br.com.estoque.domain.Fornecedores;
+import br.com.estoque.util.JSFUtil;
 import br.com.estoque.DAO.FornecedoresDAO;
 
 public class FornecedoresBean {
+
+	private Fornecedores fornecedores;
+	
+	public Fornecedores getFornecedores() {
+		return fornecedores;
+	}
+
+	public void setFornecedores(Fornecedores fornecedores) {
+		this.fornecedores = fornecedores;
+	}
 
 	private ListDataModel<Fornecedores>itens;
 	
@@ -34,4 +45,22 @@ public class FornecedoresBean {
 		}
 	}
 	
+	public void PrepararNovo() {
+		fornecedores = new Fornecedores();
+	}
+	
+	public void novo() {
+		try {
+			FornecedoresDAO fdao = new FornecedoresDAO();
+			fdao.salvar(fornecedores);
+			
+			ArrayList<Fornecedores> lista = fdao.listar();
+			itens = new ListDataModel<Fornecedores>(lista);
+			
+			JSFUtil.adicionarMensagemSucesso("Fornecedor salvo com sucesso! ");
+		}catch(SQLException e){
+			JSFUtil.adicionarMensagemErro("ex.getMensagem()");
+			e.printStackTrace();
+		}
+	}
 }
